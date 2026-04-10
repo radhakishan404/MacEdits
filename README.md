@@ -1,21 +1,26 @@
 # MacEdits
 
-**Local-first macOS reel editor built with SwiftUI + AVFoundation.**
+> Local-first macOS reel editor built with SwiftUI + AVFoundation.
+
+[![Platform](https://img.shields.io/badge/platform-macOS_14%2B-111827?style=for-the-badge)](https://www.apple.com/macos/)
+[![Swift](https://img.shields.io/badge/Swift-6.2-orange?style=for-the-badge&logo=swift)](https://www.swift.org/)
+[![UI](https://img.shields.io/badge/UI-SwiftUI-0ea5e9?style=for-the-badge)](https://developer.apple.com/xcode/swiftui/)
+[![License](https://img.shields.io/badge/license-MIT-22c55e?style=for-the-badge)](LICENSE)
 
 I use Instagram Edits-style workflows a lot, but I wanted the same speed + control on Mac.  
-So I started building this for myself first. Then I thought: why not open source it and build it in public?
+So I built this for myself first, then thought: open source karte hain and build in public.
 
-Thoda sa creator pain, thoda sa engineering madness, full dil se project.
+Thoda creator pain, thoda engineering madness, full dil se project.
 
-## Why this exists
+## Why I built this
 
 Most options are either:
-- phone-only flow (fast, but limited when edits get serious), or
-- pro editing tools (powerful, but heavy for quick reels).
+- phone-only flow (fast, but limited when edits get serious),
+- pro tools (powerful, but heavy for quick social edits).
 
-MacEdits tries to sit in the middle:
-- fast recording/import
-- timeline editing that feels snappy
+MacEdits sits in the middle:
+- fast record/import
+- snappy timeline editing
 - captions/text/transitions/audio controls
 - local export, no backend dependency
 
@@ -30,23 +35,35 @@ MacEdits tries to sit in the middle:
 ### Main Editor
 ![MacEdits Editor](assets/screenshots/editor-full.png)
 
-## Current Feature Set (Public Alpha)
+## Current Status
 
-- Recording studio (camera / screen / screen+cam modes)
-- Multi-track timeline editing
-- Split, trim, reorder, ripple/non-ripple editing
-- Transition controls (type + duration)
-- Text overlays and caption generation fallback flow
-- Audio controls (mute/solo/volume/voiceover path)
-- Export pipeline with retry/fallback behavior
-- Autosave + recovery mechanics
+| Area | Status | Notes |
+|---|---|---|
+| Recording Studio | Stable | Camera, Screen, Screen+Cam modes |
+| Timeline Core | Stable | Split, trim, reorder, ripple editing |
+| Transitions | In Progress | Preview parity edge cases remaining |
+| Captions | In Progress | Improving reliability across devices/locales |
+| Export | In Progress | Better fallback + diagnostics in progress |
+| Accessibility | In Progress | Labels and keyboard polish ongoing |
 
-## What is still cooking
+## Progress Snapshot
 
-- Transition preview parity edge cases
-- Screen+camera composited preview/export polish
-- Caption QA across long clips/locales
-- More accessibility polish
+```mermaid
+pie title Production Readiness Snapshot
+    "Done" : 72
+    "In Progress" : 20
+    "Planned" : 8
+```
+
+## Editor Flow
+
+```mermaid
+flowchart LR
+    A["Record / Import"] --> B["Timeline Edit"]
+    B --> C["Text / Captions / Audio"]
+    C --> D["Transitions + Polish"]
+    D --> E["Export Reel"]
+```
 
 ## Tech Stack
 
@@ -88,29 +105,32 @@ Tests/MacEditsTests/
 scripts/
 ```
 
+## Roadmap (Short + Realistic)
+
+```mermaid
+graph TD
+    A["P0: Timeline stability"] --> B["P1: Export reliability"]
+    B --> C["P1: Caption quality"]
+    C --> D["P2: Accessibility polish"]
+    D --> E["P2: Advanced creator presets"]
+```
+
 ## Contributing
 
-If you like this and want to contribute, you’re most welcome.
+If this project looks interesting, jump in.
 
-Best places to help right now:
+Great first contribution areas:
 - timeline UX polish
-- export stability edge cases
-- caption reliability tests
+- export edge-case handling
+- caption quality tests
 - accessibility fixes
 
-Open an issue with reproducible steps, or send a PR directly if scope is clear.
-
-## Roadmap vibe
-
-The goal is simple:  
-**creator speed + desktop control + minimal friction**.
-
-No bloated workflow, no unnecessary clicks, just “record -> edit -> export”.
+Open an issue with clear repro steps, or ship a PR directly if the scope is clear.
 
 ## Star this repo?
 
-If you find this useful, drop a star.  
-That gives motivation and also helps contributors discover the project faster.
+If MacEdits helped you, please star it.  
+GitHub stars help contributors discover the project faster, and honestly, motivation bhi milti hai.
 
 ## Disclaimer
 
