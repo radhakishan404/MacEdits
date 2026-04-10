@@ -3976,29 +3976,7 @@ struct EditorView: View {
     }
 
     private func shouldFallbackToTimingCaptions(_ error: Error) -> Bool {
-        if let captionError = error as? CaptionEngineError {
-            switch captionError {
-            case .speechAuthorizationDenied, .recognizerUnavailable:
-                return true
-            case let .transcriptionFailed(message):
-                let lower = message.lowercased()
-                return lower.contains("siri")
-                    || lower.contains("dictation")
-                    || lower.contains("speech recognition")
-                    || lower.contains("not available")
-                    || lower.contains("disabled")
-            default:
-                return false
-            }
-        }
-
-        let lower = ((error as? LocalizedError)?.errorDescription ?? error.localizedDescription).lowercased()
-        return lower.contains("siri")
-            || lower.contains("dictation")
-            || lower.contains("speech recognition")
-            || lower.contains("speech recognizer")
-            || lower.contains("not available")
-            || lower.contains("disabled")
+        CaptionFallbackPolicy.shouldFallbackToTimingCaptions(for: error)
     }
 
     private func applyGeneratedCaptions(_ captions: [GeneratedCaption], anchoredTo clip: TimelineClip) {

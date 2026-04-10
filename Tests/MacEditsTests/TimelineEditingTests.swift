@@ -314,6 +314,54 @@ final class TimelineEditingTests: XCTestCase {
         XCTAssertTrue(file.transitions.isEmpty, "Deleting a clip should clean up dangling transitions")
     }
 
+    func testLongProjectStressEditsKeepTrackTimingStable() {
+        var file = makeFile(duration: 120.0)
+        guard let originalClip = file.timelineClips.first else {
+            XCTFail("Missing initial clip")
+            return
+        }
+
+        var currentClipID = originalClip.id
+        for second in 1..<120 {
+            guard let newTailID = file.splitClip(currentClipID, at: Double(second), ripple: true) else {
+                XCTFail("Split failed at second \(second)")
+                return
+            }
+            currentClipID = newTailID
+        }
+
+        let trackID = originalClip.trackID
+        XCTAssertEqual(file.clips(for: trackID).count, 120)
+
+        let initialIDs = file.clips(for: trackID).map(\.id)
+        for (index, clipID) in initialIDs.enumerated() where index % 15 == 0 {
+            file.trimClipEnd(clipID, delta: -0.12, ripple: true)
+        }
+        for (index, clipID) in initialIDs.enumerated() where index % 20 == 5 {
+            file.trimClipStart(clipID, delta: 0.08, ripple: true)
+        }
+
+        if let lastID = file.clips(for: trackID).last?.id {
+            file.moveClip(lastID, toIndex: 0)
+        }
+
+        let deleteCandidates = file.clips(for: trackID).map(\.id)
+        for (index, clipID) in deleteCandidates.enumerated() where index % 25 == 10 {
+            file.deleteClip(clipID, ripple: true)
+        }
+
+        let clips = file.clips(for: trackID)
+        XCTAssertGreaterThan(clips.count, 100, "Stress fixture should still retain a large clip count")
+
+        var cursor = 0.0
+        for clip in clips {
+            XCTAssertEqual(clip.startTime, cursor, accuracy: 0.0001, "Track drift detected after stress edits")
+            XCTAssertGreaterThan(clip.duration, 0.0)
+            cursor += clip.duration
+        }
+        XCTAssertEqual(file.totalDuration, cursor, accuracy: 0.0001)
+    }
+
     private func makeFile(duration: Double) -> ReelProjectFile {
         let now = Date()
         let assetID = UUID()

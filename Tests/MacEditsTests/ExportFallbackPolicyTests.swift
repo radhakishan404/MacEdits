@@ -23,4 +23,16 @@ final class ExportFallbackPolicyTests: XCTestCase {
         XCTAssertTrue(ExportFallbackPolicy.shouldRetryWithAlternateContainer(for: "AVFoundationErrorDomain code=-11800"))
         XCTAssertFalse(ExportFallbackPolicy.shouldRetryWithAlternateContainer(for: "disk full"))
     }
+
+    func testFileExtensionMappingHandlesRawContainerHints() {
+        let quicktimeType = AVFileType("com.apple.quicktime-movie")
+        let mpeg4Type = AVFileType("public.mpeg-4")
+
+        XCTAssertEqual(ExportFallbackPolicy.fileExtension(for: quicktimeType), "mov")
+        XCTAssertEqual(ExportFallbackPolicy.fileExtension(for: mpeg4Type), "mp4")
+    }
+
+    func testRetryPolicyDoesNotRetryOnUserCancellationSignal() {
+        XCTAssertFalse(ExportFallbackPolicy.shouldRetryWithAlternateContainer(for: "cancelled by user"))
+    }
 }
