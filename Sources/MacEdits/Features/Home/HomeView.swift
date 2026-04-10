@@ -133,6 +133,37 @@ struct HomeView: View {
                 StatRow(label: "Engine", value: "Local-First")
             }
             .padding(.horizontal, 20)
+            .padding(.bottom, 12)
+
+            Divider().overlay(AppTheme.hairline)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("SUPPORT")
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .tracking(1.4)
+                    .foregroundStyle(AppTheme.tertiaryText)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 14)
+                    .padding(.bottom, 4)
+
+                SidebarAction(
+                    title: "Contact Support",
+                    icon: "envelope.fill",
+                    tint: AppTheme.accent,
+                    accessibilityLabel: "Contact support by email"
+                ) {
+                    appModel.contactSupport()
+                }
+
+                SidebarAction(
+                    title: "Report Bug",
+                    icon: "ladybug.fill",
+                    tint: AppTheme.importAccent,
+                    accessibilityLabel: "Report bug on GitHub"
+                ) {
+                    appModel.reportBugOnGitHub()
+                }
+            }
 
             Spacer()
 
