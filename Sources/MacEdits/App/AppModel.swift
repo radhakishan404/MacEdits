@@ -11,12 +11,14 @@ final class AppModel {
     var errorMessage: String?
     var noticeMessage: String?
     var pendingRecoveryPrompt: ProjectRecoveryPrompt?
+    var pendingCrashReport: CrashReportContext?
     var pendingEditorAssetSelectionID: UUID?
 
     let store: ProjectStore
 
     init(store: ProjectStore = ProjectStore()) {
         self.store = store
+        self.pendingCrashReport = SupportCenter.detectLatestUnreportedCrash()
     }
 
     func startNewRecording() {
@@ -222,6 +224,52 @@ final class AppModel {
 
     func dismissRecoveryPrompt() {
         pendingRecoveryPrompt = nil
+    }
+
+    func refreshCrashReportPrompt() {
+        guard pendingCrashReport == nil else { return }
+        pendingCrashReport = SupportCenter.detectLatestUnreportedCrash()
+    }
+
+    func dismissCrashReportPrompt(markAsHandled: Bool = true) {
+        if markAsHandled, let crash = pendingCrashReport {
+            SupportCenter.markCrashAsHandled(crash)
+        }
+        pendingCrashReport = nil
+    }
+
+    func reportPendingCrashOnGitHub() {
+        guard let crash = pendingCrashReport else { return }
+        let title = SupportCenter.crashIssueTitle(crash)
+        let body = SupportCenter.crashIssueBody(crash)
+        SupportCenter.openBugReportURL(title: title, body: body, labels: ["bug", "crash"])
+        SupportCenter.markCrashAsHandled(crash)
+        pendingCrashReport = nil
+        noticeMessage = "Opened GitHub issue form with crash details."
+    }
+
+    func emailSupportForPendingCrash() {
+        guard let crash = pendingCrashReport else { return }
+        let subject = "MacEdits Crash Report - \(crash.fileName)"
+        let body = SupportCenter.supportEmailBody(for: crash)
+        SupportCenter.openSupportEmail(subject: subject, body: body)
+        SupportCenter.markCrashAsHandled(crash)
+        pendingCrashReport = nil
+        noticeMessage = "Opened support email draft with crash details."
+    }
+
+    func contactSupport() {
+        SupportCenter.openSupportEmail(
+            subject: "MacEdits Support Request",
+            body: SupportCenter.genericSupportEmailBody
+        )
+    }
+
+    func reportBugOnGitHub() {
+        SupportCenter.openBugReportURL(
+            title: "[Bug] ",
+            body: SupportCenter.genericBugIssueBody
+        )
     }
 
     func resolveRecoveryPrompt(useAutosave: Bool) {

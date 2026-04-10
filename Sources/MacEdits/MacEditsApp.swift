@@ -11,6 +11,9 @@ struct MacEditsApp: App {
                 .frame(minWidth: 980, minHeight: 700)
         }
         .defaultSize(width: 1400, height: 900)
+        .commands {
+            SupportCommands()
+        }
     }
 }
 
@@ -50,6 +53,9 @@ private struct RootView: View {
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.85), value: appModel.screen)
         .background(AppTheme.windowBackground.ignoresSafeArea())
+        .onAppear {
+            appModel.refreshCrashReportPrompt()
+        }
         .alert("Action Failed", isPresented: errorBinding, actions: {
             Button("OK", role: .cancel) {
                 appModel.dismissError()
@@ -73,6 +79,23 @@ private struct RootView: View {
             }
         } message: { prompt in
             Text(prompt.message)
+        }
+        .alert(
+            "MacEdits Found a Crash Report",
+            isPresented: crashBinding,
+            presenting: appModel.pendingCrashReport
+        ) { _ in
+            Button("Report on GitHub") {
+                appModel.reportPendingCrashOnGitHub()
+            }
+            Button("Email Support") {
+                appModel.emailSupportForPendingCrash()
+            }
+            Button("Dismiss", role: .cancel) {
+                appModel.dismissCrashReportPrompt()
+            }
+        } message: { crash in
+            Text("Previous session appears to have crashed (\(crash.fileName)). Share it so we can fix it faster.")
         }
         .alert("Recovered Project", isPresented: noticeBinding, actions: {
             Button("OK", role: .cancel) {
@@ -100,6 +123,7 @@ private struct RootView: View {
                 appModel.noticeMessage != nil
                     && appModel.errorMessage == nil
                     && appModel.pendingRecoveryPrompt == nil
+                    && appModel.pendingCrashReport == nil
             },
             set: { newValue in
                 if !newValue {
@@ -118,5 +142,41 @@ private struct RootView: View {
                 }
             }
         )
+    }
+
+    private var crashBinding: Binding<Bool> {
+        Binding(
+            get: {
+                appModel.pendingCrashReport != nil
+                    && appModel.errorMessage == nil
+                    && appModel.pendingRecoveryPrompt == nil
+                    && appModel.noticeMessage == nil
+            },
+            set: { newValue in
+                if !newValue {
+                    appModel.dismissCrashReportPrompt()
+                }
+            }
+        )
+    }
+}
+
+private struct SupportCommands: Commands {
+    @Environment(AppModel.self) private var appModel
+
+    var body: some Commands {
+        CommandMenu("Support") {
+            Button("Contact Support Email") {
+                appModel.contactSupport()
+            }
+            Button("Report Bug on GitHub") {
+                appModel.reportBugOnGitHub()
+            }
+            Divider()
+            Button("Report Last Crash") {
+                appModel.reportPendingCrashOnGitHub()
+            }
+            .disabled(appModel.pendingCrashReport == nil)
+        }
     }
 }

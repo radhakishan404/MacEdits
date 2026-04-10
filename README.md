@@ -90,6 +90,25 @@ swift test
 
 The run script launches `MacEdits Dev.app` in `~/Applications`.
 
+## Build Installer DMG
+
+Create a distributable macOS installer image:
+
+```bash
+./scripts/build-dmg.sh --version 1.0.0 --build-number 1
+```
+
+Output:
+- `dist/MacEdits.app`
+- `dist/MacEdits-1.0.0.dmg`
+
+Optional:
+```bash
+./scripts/build-dmg.sh --version 1.0.0 --build-number 1 --open
+```
+
+By default the script uses ad-hoc signing (`-`). Set `SIGN_IDENTITY` if you want Developer ID signing.
+
 ## Project Structure
 
 ```text
@@ -126,6 +145,15 @@ Great first contribution areas:
 - accessibility fixes
 
 Open an issue with clear repro steps, or ship a PR directly if the scope is clear.
+
+## Support and Crash Reporting
+
+- In-app support actions are available from the Home sidebar and the `Support` menu.
+- `Contact Support` opens an email draft to `support@macedits.app`.
+- `Report Bug` opens a prefilled GitHub issue.
+- If MacEdits detects a recent crash log on startup, it prompts you to:
+  - report crash on GitHub with a prefilled template, or
+  - email support with crash context attached in the draft.
 
 ## Star this repo?
 
