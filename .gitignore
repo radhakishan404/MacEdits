@@ -22,11 +22,9 @@ local-docs/
 # Keep documentation local for now
 .github/
 Plan/
-README.md
 CONTRIBUTING.md
 CODE_OF_CONDUCT.md
 SECURITY.md
 ROADMAP.md
 OPEN_SOURCE_LAUNCH.md
 LICENSE
-assets/screenshots/
